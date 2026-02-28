@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditory Memory Training</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #1a1a2e;
+      font-family: system-ui, sans-serif;
+      color: #eee;
+      padding: 40px 24px;
+      gap: 32px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #aaa;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Play button ── */
+    #playBtn {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: none;
+      background: #e94560;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(233, 69, 96, 0.5);
+      transition: transform 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+    }
+    #playBtn:hover { transform: scale(1.08); box-shadow: 0 8px 32px rgba(233,69,96,0.7); }
+    #playBtn:active { transform: scale(0.95); }
+
+    .icon-play {
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 15px 0 15px 26px;
+      border-color: transparent transparent transparent #fff;
+      margin-left: 5px;
+    }
+    .icon-pause { display: none; gap: 7px; }
+    .icon-pause span { display: block; width: 6px; height: 26px; background: #fff; border-radius: 3px; }
+    #playBtn.playing .icon-play { display: none; }
+    #playBtn.playing .icon-pause { display: flex; }
+
+    /* ── Quiz-me button ── */
+    #quizBtn {
+      display: none;
+      padding: 13px 32px;
+      border-radius: 10px;
+      border: none;
+      background: #e94560;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      box-shadow: 0 4px 16px rgba(233,69,96,0.4);
+      transition: background 0.15s, transform 0.1s;
+    }
+    #quizBtn:hover { background: #c73652; transform: scale(1.04); }
+
+    /* ── Quiz panel ── */
+    #quiz {
+      display: none;
+      flex-direction: column;
+      gap: 36px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .question-label {
+      margin: 0 0 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ddd;
+    }
+
+    /* ── Picture cards grid ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .card-grid.wide {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px 10px;
+      border-radius: 14px;
+      background: #16213e;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s, background 0.15s, transform 0.12s;
+    }
+    .card:hover { transform: translateY(-2px); border-color: rgba(233,69,96,0.5); }
+
+    .card.selected {
+      border-color: #e94560;
+      background: #1f1040;
+    }
+
+    .card .check {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e94560;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .card.selected .check { display: flex; }
+    .check svg { width: 13px; height: 13px; }
+
+    .card .emoji {
+      font-size: 2.6rem;
+      line-height: 1;
+    }
+    .card .card-label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #bbb;
+      text-align: center;
+    }
+    .card.selected .card-label { color: #fff; }
+
+    /* Number cards — show emoji rows */
+    .emoji-row { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
+    .emoji-row span { font-size: 1.6rem; line-height: 1; }
+
+    /* ── Submit ── */
+    #submitBtn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      background: #e94560;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    #submitBtn:hover { background: #c73652; }
+
+    /* ── Results ── */
+    #results {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    #scoreBadge {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #e94560;
+    }
+    #scoreLabel {
+      margin-top: -16px;
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    .result-card {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #16213e;
+      border-left: 4px solid;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .result-card.correct { border-color: #2ecc71; }
+    .result-card.wrong   { border-color: #e94560; }
+    .result-card .verdict {
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .result-card.correct .verdict { color: #2ecc71; }
+    .result-card.wrong   .verdict { color: #e94560; }
+
+    #retryBtn {
+      padding: 13px 32px;
+      border-radius: 10px;
+      border: 2px solid #e94560;
+      background: transparent;
+      color: #e94560;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    #retryBtn:hover { background: #e94560; color: #fff; }
+
+    /* ── Difficulty picker ── */
+    #diffPicker {
+      display: flex;
+      background: #16213e;
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+
+    .diff-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 20px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: #888;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: background 0.15s, color 0.15s;
+    }
+    .diff-btn svg { width: 22px; height: 22px; }
+    .diff-btn:hover { color: #ccc; }
+    .diff-btn.active {
+      background: #1a1a2e;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .diff-btn.active svg path,
+    .diff-btn.active svg rect,
+    .diff-btn.active svg polygon { fill: #e94560; }
+
+    /* noise-wave indicator under play button */
+    #noiseIndicator {
+      font-size: 0.78rem;
+      color: #666;
+      letter-spacing: 0.04em;
+      height: 18px;
+      transition: color 0.3s;
+    }
+    #noiseIndicator.active { color: #e94560; }
+  </style>
+</head>
+<body>
+  <audio id="audio" src="assets/speech/shopping-1.mp3"></audio>
+
+  <h1>Auditory Memory Training</h1>
+
+  <!-- Difficulty -->
+  <div id="diffPicker">
+    <button class="diff-btn active" data-level="easy" onclick="setDifficulty(this)">
+      <!-- speaker off -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#888"/>
+        <line x1="23" y1="9" x2="17" y2="15" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+        <line x1="17" y1="9" x2="23" y2="15" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Easy
+    </button>
+    <button class="diff-btn" data-level="medium" onclick="setDifficulty(this)">
+      <!-- speaker one wave -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#888"/>
+        <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Medium
+    </button>
+    <button class="diff-btn" data-level="hard" onclick="setDifficulty(this)">
+      <!-- speaker two waves -->
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#888"/>
+        <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+        <path d="M19 6a9 9 0 0 1 0 12" stroke="#888" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Hard
+    </button>
+  </div>
+
+  <button id="playBtn" onclick="togglePlay()">
+    <div class="icon-play"></div>
+    <div class="icon-pause"><span></span><span></span></div>
+  </button>
+
+  <div id="noiseIndicator"></div>
+
+  <button id="quizBtn" onclick="showQuiz()">Quiz me</button>
+
+  <!-- ══════════════ QUIZ ══════════════ -->
+  <div id="quiz">
+
+    <!-- Q1: Where? -->
+    <div>
+      <p class="question-label">1. Where did the shopping take place?</p>
+      <div class="card-grid" id="q1">
+        <div class="card" data-q="q1" data-v="market" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🧺</div>
+          <div class="card-label">The market</div>
+        </div>
+        <div class="card" data-q="q1" data-v="shops" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🏪</div>
+          <div class="card-label">The shops</div>
+        </div>
+        <div class="card" data-q="q1" data-v="supermarket" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🛒</div>
+          <div class="card-label">The supermarket</div>
+        </div>
+        <div class="card" data-q="q1" data-v="bakery" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🥖</div>
+          <div class="card-label">The bakery</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2: How many items? -->
+    <div>
+      <p class="question-label">2. How many items were mentioned?</p>
+      <div class="card-grid" id="q2">
+        <div class="card" data-q="q2" data-v="2" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji-row"><span>🛍️</span><span>🛍️</span></div>
+          <div class="card-label">Two</div>
+        </div>
+        <div class="card" data-q="q2" data-v="3" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji-row"><span>🛍️</span><span>🛍️</span><span>🛍️</span></div>
+          <div class="card-label">Three</div>
+        </div>
+        <div class="card" data-q="q2" data-v="4" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji-row"><span>🛍️</span><span>🛍️</span><span>🛍️</span><span>🛍️</span></div>
+          <div class="card-label">Four</div>
+        </div>
+        <div class="card" data-q="q2" data-v="5" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji-row"><span>🛍️</span><span>🛍️</span><span>🛍️</span><span>🛍️</span><span>🛍️</span></div>
+          <div class="card-label">Five</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3: How many apples? -->
+    <div>
+      <p class="question-label">3. How many apples were bought?</p>
+      <div class="card-grid" id="q3">
+        <div class="card" data-q="q3" data-v="2" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji-row"><span>🍎</span><span>🍎</span></div>
+          <div class="card-label">Two</div>
+        </div>
+        <div class="card" data-q="q3" data-v="3" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji-row"><span>🍎</span><span>🍎</span><span>🍎</span></div>
+          <div class="card-label">Three</div>
+        </div>
+        <div class="card" data-q="q3" data-v="4" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji-row"><span>🍎</span><span>🍎</span><span>🍎</span><span>🍎</span></div>
+          <div class="card-label">Four</div>
+        </div>
+        <div class="card" data-q="q3" data-v="bag" onclick="pick(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🛍️</div>
+          <div class="card-label">A bag</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4: Which items? (multi-select) -->
+    <div>
+      <p class="question-label">4. Which items were bought? <span style="color:#aaa;font-weight:400">(select all)</span></p>
+      <div class="card-grid wide" id="q4">
+        <div class="card multi" data-q="q4" data-v="milk" onclick="toggle(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🥛</div>
+          <div class="card-label">Carton of milk</div>
+        </div>
+        <div class="card multi" data-q="q4" data-v="eggs" onclick="toggle(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🥚</div>
+          <div class="card-label">Eggs</div>
+        </div>
+        <div class="card multi" data-q="q4" data-v="bread" onclick="toggle(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🍞</div>
+          <div class="card-label">Loaf of bread</div>
+        </div>
+        <div class="card multi" data-q="q4" data-v="butter" onclick="toggle(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🧈</div>
+          <div class="card-label">Butter</div>
+        </div>
+        <div class="card multi" data-q="q4" data-v="apples" onclick="toggle(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🍎</div>
+          <div class="card-label">Apples</div>
+        </div>
+        <div class="card multi" data-q="q4" data-v="cheese" onclick="toggle(this)">
+          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="emoji">🧀</div>
+          <div class="card-label">Cheese</div>
+        </div>
+      </div>
+    </div>
+
+    <button id="submitBtn" onclick="submitQuiz()">Submit answers</button>
+  </div>
+
+  <!-- ══════════════ RESULTS ══════════════ -->
+  <div id="results">
+    <div id="scoreBadge"></div>
+    <div id="scoreLabel"></div>
+    <div id="resultItems" style="width:100%;display:flex;flex-direction:column;gap:10px;"></div>
+    <button id="retryBtn" onclick="retry()">&#9654; Listen again &amp; retry</button>
+  </div>
+
+  <script>
+    const audio     = document.getElementById('audio');
+    const playBtn   = document.getElementById('playBtn');
+    const quizBtn   = document.getElementById('quizBtn');
+    const quizEl    = document.getElementById('quiz');
+    const results   = document.getElementById('results');
+    const noiseInd  = document.getElementById('noiseIndicator');
+
+    let hasPlayed   = false;
+    let difficulty  = 'easy';
+
+    // ── Difficulty ──────────────────────────────────────────
+    const noiseLevels = { easy: 0, medium: 0.18, hard: 0.5 };
+    const noiseLabels = { easy: '', medium: '◈ Background noise: medium', hard: '◈ Background noise: high' };
+
+    function setDifficulty(btn) {
+      document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      difficulty = btn.dataset.level;
+    }
+
+    // ── Web Audio API ────────────────────────────────────────
+    let audioCtx   = null;
+    let noiseGain  = null;
+
+    function initAudio() {
+      if (audioCtx) return;
+
+      audioCtx = new AudioContext();
+
+      // Generate pink noise (Paul Kellett's method)
+      const sampleRate = audioCtx.sampleRate;
+      const bufLen     = sampleRate * 4; // 4-second looping buffer
+      const buffer     = audioCtx.createBuffer(1, bufLen, sampleRate);
+      const data       = buffer.getChannelData(0);
+      let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+      for (let i = 0; i < bufLen; i++) {
+        const w = Math.random() * 2 - 1;
+        b0 = 0.99886*b0 + w*0.0555179;
+        b1 = 0.99332*b1 + w*0.0750759;
+        b2 = 0.96900*b2 + w*0.1538520;
+        b3 = 0.86650*b3 + w*0.3104856;
+        b4 = 0.55000*b4 + w*0.5329522;
+        b5 = -0.7616*b5 - w*0.0168980;
+        data[i] = (b0+b1+b2+b3+b4+b5+b6 + w*0.5362) / 7;
+        b6 = w * 0.115926;
+      }
+
+      const noiseSource = audioCtx.createBufferSource();
+      noiseSource.buffer = buffer;
+      noiseSource.loop   = true;
+
+      // Low-pass filter — softens noise into crowd-like murmur
+      const lpf = audioCtx.createBiquadFilter();
+      lpf.type            = 'lowpass';
+      lpf.frequency.value = 1800;
+      lpf.Q.value         = 0.8;
+
+      noiseGain = audioCtx.createGain();
+      noiseGain.gain.value = 0;
+
+      noiseSource.connect(lpf);
+      lpf.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noiseSource.start();
+    }
+
+    function setNoiseGain(value, fadeTime = 0.15) {
+      if (!noiseGain) return;
+      noiseGain.gain.setTargetAtTime(value, audioCtx.currentTime, fadeTime);
+    }
+
+    // ── Playback ─────────────────────────────────────────────
+    function togglePlay() {
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      if (audio.paused) {
+        audio.play();
+        playBtn.classList.add('playing');
+        setNoiseGain(noiseLevels[difficulty]);
+        noiseInd.textContent = noiseLabels[difficulty];
+        noiseInd.classList.toggle('active', difficulty !== 'easy');
+      } else {
+        audio.pause();
+        playBtn.classList.remove('playing');
+        setNoiseGain(0);
+        noiseInd.textContent = '';
+        noiseInd.classList.remove('active');
+      }
+    }
+
+    audio.addEventListener('ended', () => {
+      playBtn.classList.remove('playing');
+      setNoiseGain(0);
+      noiseInd.textContent = '';
+      noiseInd.classList.remove('active');
+      if (!hasPlayed) { hasPlayed = true; quizBtn.style.display = 'block'; }
+    });
+
+    function showQuiz() {
+      quizBtn.style.display = 'none';
+      quizEl.style.display = 'flex';
+    }
+
+    // ── Card interactions ────────────────────────────────────
+    function pick(card) {
+      const q = card.dataset.q;
+      document.querySelectorAll(`.card[data-q="${q}"]`).forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    }
+
+    function toggle(card) {
+      card.classList.toggle('selected');
+    }
+
+    // ── Quiz logic ───────────────────────────────────────────
+    const correct = {
+      q1: 'shops',
+      q2: '3',
+      q3: '3',
+      q4: ['milk', 'bread', 'apples'],
+    };
+
+    const explanations = {
+      q1: '"Today at the shops…" — the shops.',
+      q2: 'Three items: milk, apples, and bread.',
+      q3: 'Three apples were bought.',
+      q4: 'A carton of milk, three apples, and a loaf of bread.',
+    };
+
+    function submitQuiz() {
+      let score = 0;
+      const items = [];
+
+      ['q1','q2','q3'].forEach(q => {
+        const sel = document.querySelector(`.card[data-q="${q}"].selected`);
+        const ok  = sel && sel.dataset.v === correct[q];
+        if (ok) score++;
+        items.push({ ok, label: `Question ${q[1]}`, explanation: explanations[q] });
+      });
+
+      const chosen = [...document.querySelectorAll('.card[data-q="q4"].selected')].map(c => c.dataset.v).sort();
+      const ok4    = JSON.stringify(chosen) === JSON.stringify([...correct.q4].sort());
+      if (ok4) score++;
+      items.push({ ok: ok4, label: 'Question 4', explanation: explanations.q4 });
+
+      document.getElementById('scoreBadge').textContent = `${score} / 4`;
+      document.getElementById('scoreLabel').textContent =
+        score === 4 ? 'Perfect memory!' :
+        score === 3 ? 'Great job!'       :
+        score === 2 ? 'Getting there!'   :
+        'Keep practising!';
+
+      const container = document.getElementById('resultItems');
+      container.innerHTML = '';
+      items.forEach(item => {
+        const d = document.createElement('div');
+        d.className = 'result-card ' + (item.ok ? 'correct' : 'wrong');
+        d.innerHTML = `<div class="verdict">${item.ok ? '✓' : '✗'} ${item.label}</div>
+          <div style="color:#bbb">${item.explanation}</div>`;
+        container.appendChild(d);
+      });
+
+      quizEl.style.display = 'none';
+      results.style.display = 'flex';
+    }
+
+    function retry() {
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+      results.style.display = 'none';
+      quizEl.style.display  = 'none';
+      quizBtn.style.display = 'none';
+      hasPlayed = false;
+      audio.currentTime = 0;
+      // Re-play (noise will kick in via togglePlay logic)
+      initAudio();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      audio.play();
+      playBtn.classList.add('playing');
+      setNoiseGain(noiseLevels[difficulty]);
+      noiseInd.textContent = noiseLabels[difficulty];
+      noiseInd.classList.toggle('active', difficulty !== 'easy');
+    }
+  </script>
+</body>
+</html>
