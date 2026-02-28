@@ -214,12 +214,21 @@
       transition:background 0.15s, color 0.15s;
     }
     .btn-outline:hover { background:#e94560; color:#fff; }
+
+    /* ── Total score display ── */
+    #scoreDisplay {
+      font-size:0.9rem; font-weight:700; color:#f5c518;
+      background:#16213e; border-radius:10px; padding:8px 18px;
+      letter-spacing:0.04em;
+    }
   </style>
 </head>
 <body>
   <audio id="audio"></audio>
 
   <h1>Auditory Memory Training</h1>
+
+  <div id="scoreDisplay">🏆 0 pts</div>
 
   <div id="progress"></div>
 
@@ -258,7 +267,14 @@
       <div class="setting-row">
         <span class="setting-label">Delay</span>
         <div class="picker">
-          <button class="pick-btn active" data-delay="5" onclick="setDelay(this)">
+          <button class="pick-btn active" data-delay="0" onclick="setDelay(this)">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="#555" stroke-width="2"/>
+              <polyline points="12,6 12,12 16,12" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="delay-time">0s</span>
+          </button>
+          <button class="pick-btn" data-delay="5" onclick="setDelay(this)">
             <svg viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="9" stroke="#555" stroke-width="2"/>
               <polyline points="12,6 12,12 16,12" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -289,6 +305,8 @@
     </button>
 
     <div id="noiseIndicator"></div>
+
+    <button id="beginQuizBtn" class="btn-primary" onclick="beginQuiz()" style="display:none">Begin Quiz →</button>
 
     <div id="countdown">
       <p>Prepare your answer&hellip;</p>
@@ -562,14 +580,15 @@
     let currentIdx  = 0;
     let hasPlayed   = false;
     let noise       = 'easy';
-    let delay       = 5;
+    let delay       = 0;
     let quizResults = []; // { numCorrect, pts, items }
+    let totalPts    = 0;
 
     // ── Settings ─────────────────────────────────────────────
     const noiseLevels = { easy:0,   medium:0.18, hard:0.5 };
     const noiseLabels = { easy:'',  medium:'◈ Background noise: medium', hard:'◈ Background noise: high' };
     const noiseMults  = { easy:1.0, medium:1.5,  hard:2.0 };
-    const delayMults  = { 5:1.0,    10:1.25,     15:1.5 };
+    const delayMults  = { 0:1.0,    5:1.0,    10:1.25,     15:1.5 };
 
     function setNoise(btn) {
       btn.closest('.picker').querySelectorAll('.pick-btn').forEach(b => b.classList.remove('active'));
@@ -671,10 +690,14 @@
 
     audio.addEventListener('ended', () => {
       playBtn.classList.remove('playing');
+      playBtn.disabled = false;
       setNoiseGain(0);
       noiseInd.textContent = '';
       noiseInd.classList.remove('active');
-      if (!hasPlayed) { hasPlayed = true; startCountdown(delay); }
+      if (!hasPlayed) {
+        hasPlayed = true;
+        document.getElementById('beginQuizBtn').style.display = 'block';
+      }
     });
 
     // ── Countdown ─────────────────────────────────────────────
@@ -696,6 +719,17 @@
           renderAndShowQuiz();
         }
       }, 1000);
+    }
+
+    // ── Begin quiz (called by Begin Quiz button) ───────────────
+    function beginQuiz() {
+      document.getElementById('beginQuizBtn').style.display = 'none';
+      playBtn.disabled = true;
+      if (delay === 0) {
+        renderAndShowQuiz();
+      } else {
+        startCountdown(delay);
+      }
     }
 
     // ── Progress dots ──────────────────────────────────────────
@@ -771,6 +805,8 @@
       const dm  = delayMults[delay];
       const pts = Math.round(numCorrect * 100 * nm * dm);
       quizResults.push({ numCorrect, pts, items, title: s.title });
+      totalPts += pts;
+      updateScoreDisplay();
 
       quizEl.style.display = 'none';
       showBetween(numCorrect, pts, nm, dm, items);
@@ -847,6 +883,11 @@
       finalEl.style.display = 'flex';
     }
 
+    // ── Score display ──────────────────────────────────────────
+    function updateScoreDisplay() {
+      document.getElementById('scoreDisplay').textContent = `🏆 ${totalPts} pts`;
+    }
+
     // ── Start scenario ─────────────────────────────────────────
     function startScenario(idx) {
       audio.src = scenarios[idx].audio;
@@ -856,6 +897,7 @@
       countdownEl.style.display = 'none';
       quizEl.style.display = 'none';
       listenPhase.style.display = 'flex';
+      document.getElementById('beginQuizBtn').style.display = 'none';
       renderProgress();
     }
 
@@ -863,6 +905,8 @@
     function restartAll() {
       currentIdx  = 0;
       quizResults = [];
+      totalPts    = 0;
+      updateScoreDisplay();
       finalEl.style.display   = 'none';
       betweenEl.style.display = 'none';
       progressEl.style.display = 'flex';
