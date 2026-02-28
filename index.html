@@ -44,8 +44,9 @@
       transition: transform 0.15s, box-shadow 0.15s;
       flex-shrink: 0;
     }
-    #playBtn:hover { transform: scale(1.08); box-shadow: 0 8px 32px rgba(233,69,96,0.7); }
-    #playBtn:active { transform: scale(0.95); }
+    #playBtn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 8px 32px rgba(233,69,96,0.7); }
+    #playBtn:active:not(:disabled) { transform: scale(0.95); }
+    #playBtn:disabled { opacity: 0.35; cursor: default; }
 
     .icon-play {
       width: 0; height: 0;
@@ -58,23 +59,6 @@
     .icon-pause span { display: block; width: 6px; height: 26px; background: #fff; border-radius: 3px; }
     #playBtn.playing .icon-play { display: none; }
     #playBtn.playing .icon-pause { display: flex; }
-
-    /* ── Quiz-me button ── */
-    #quizBtn {
-      display: none;
-      padding: 13px 32px;
-      border-radius: 10px;
-      border: none;
-      background: #e94560;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.03em;
-      box-shadow: 0 4px 16px rgba(233,69,96,0.4);
-      transition: background 0.15s, transform 0.1s;
-    }
-    #quizBtn:hover { background: #c73652; transform: scale(1.04); }
 
     /* ── Quiz panel ── */
     #quiz {
@@ -315,8 +299,6 @@
 
   <div id="noiseIndicator"></div>
 
-  <button id="quizBtn" onclick="showQuiz()">Quiz me</button>
-
   <!-- ══════════════ QUIZ ══════════════ -->
   <div id="quiz">
 
@@ -452,7 +434,6 @@
   <script>
     const audio     = document.getElementById('audio');
     const playBtn   = document.getElementById('playBtn');
-    const quizBtn   = document.getElementById('quizBtn');
     const quizEl    = document.getElementById('quiz');
     const results   = document.getElementById('results');
     const noiseInd  = document.getElementById('noiseIndicator');
@@ -529,15 +510,10 @@
       if (audio.paused) {
         audio.play();
         playBtn.classList.add('playing');
+        playBtn.disabled = true;
         setNoiseGain(noiseLevels[difficulty]);
         noiseInd.textContent = noiseLabels[difficulty];
         noiseInd.classList.toggle('active', difficulty !== 'easy');
-      } else {
-        audio.pause();
-        playBtn.classList.remove('playing');
-        setNoiseGain(0);
-        noiseInd.textContent = '';
-        noiseInd.classList.remove('active');
       }
     }
 
@@ -546,7 +522,7 @@
       setNoiseGain(0);
       noiseInd.textContent = '';
       noiseInd.classList.remove('active');
-      if (!hasPlayed) { hasPlayed = true; quizBtn.style.display = 'block'; }
+      if (!hasPlayed) { hasPlayed = true; showQuiz(); }
     });
 
     function showQuiz() {
@@ -621,8 +597,8 @@
       document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
       results.style.display = 'none';
       quizEl.style.display  = 'none';
-      quizBtn.style.display = 'none';
       hasPlayed = false;
+      playBtn.disabled = false;
       audio.currentTime = 0;
       // Re-play (noise will kick in via togglePlay logic)
       initAudio();
