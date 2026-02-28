@@ -16,8 +16,8 @@
       background: #1a1a2e;
       font-family: system-ui, sans-serif;
       color: #eee;
-      padding: 40px 24px;
-      gap: 28px;
+      padding: 32px 24px;
+      gap: 24px;
     }
 
     h1 {
@@ -29,31 +29,43 @@
       text-transform: uppercase;
     }
 
+    /* ── Progress dots ── */
+    #progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #2a2a4a;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .dot.done    { background: #e94560; }
+    .dot.current { background: #e94560; transform: scale(1.35); box-shadow: 0 0 8px rgba(233,69,96,0.6); }
+
     /* ── Settings ── */
     .settings {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
       max-width: 520px;
     }
-
     .setting-row {
       display: flex;
       align-items: center;
       gap: 14px;
     }
-
     .setting-label {
       font-size: 0.72rem;
       font-weight: 600;
-      color: #666;
+      color: #555;
       letter-spacing: 0.07em;
       text-transform: uppercase;
       width: 90px;
       flex-shrink: 0;
     }
-
     .picker {
       display: flex;
       background: #16213e;
@@ -62,7 +74,6 @@
       gap: 3px;
       flex: 1;
     }
-
     .pick-btn {
       flex: 1;
       display: flex;
@@ -74,38 +85,29 @@
       border-radius: 8px;
       border: none;
       background: transparent;
-      color: #666;
+      color: #555;
       font-size: 0.7rem;
       font-weight: 600;
       cursor: pointer;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
     }
-    .pick-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .pick-btn svg { width: 20px; height: 20px; }
     .pick-btn:hover { color: #bbb; }
     .pick-btn.active {
       background: #1a1a2e;
       color: #fff;
       box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
-    /* colour SVG fills on active noise buttons */
-    .pick-btn.active svg path { fill: #e94560; }
-    /* colour SVG strokes on active delay buttons */
+    .pick-btn.active svg path  { fill: #e94560; }
     .pick-btn.active svg circle,
     .pick-btn.active svg polyline { stroke: #e94560; }
-
-    .delay-time {
-      font-size: 1.1rem;
-      font-weight: 700;
-      line-height: 1;
-    }
+    .delay-time { font-size: 1.1rem; font-weight: 700; line-height: 1; }
 
     /* ── Play button ── */
     #playBtn {
-      width: 88px;
-      height: 88px;
+      width: 88px; height: 88px;
       border-radius: 50%;
       border: none;
       background: #e94560;
@@ -113,478 +115,499 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 24px rgba(233, 69, 96, 0.5);
+      box-shadow: 0 4px 24px rgba(233,69,96,0.5);
       transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
       flex-shrink: 0;
     }
     #playBtn:hover:not(:disabled) { transform: scale(1.08); box-shadow: 0 8px 32px rgba(233,69,96,0.7); }
     #playBtn:active:not(:disabled) { transform: scale(0.95); }
     #playBtn:disabled { opacity: 0.35; cursor: default; }
-
-    .icon-play {
-      width: 0; height: 0;
-      border-style: solid;
-      border-width: 15px 0 15px 26px;
-      border-color: transparent transparent transparent #fff;
-      margin-left: 5px;
-    }
-    .icon-pause { display: none; gap: 7px; }
-    .icon-pause span { display: block; width: 6px; height: 26px; background: #fff; border-radius: 3px; }
-    #playBtn.playing .icon-play { display: none; }
+    .icon-play { width:0; height:0; border-style:solid; border-width:15px 0 15px 26px; border-color:transparent transparent transparent #fff; margin-left:5px; }
+    .icon-pause { display:none; gap:7px; }
+    .icon-pause span { display:block; width:6px; height:26px; background:#fff; border-radius:3px; }
+    #playBtn.playing .icon-play  { display: none; }
     #playBtn.playing .icon-pause { display: flex; }
 
-    /* ── Noise indicator ── */
-    #noiseIndicator {
-      font-size: 0.78rem;
-      color: #666;
-      letter-spacing: 0.04em;
-      height: 18px;
-      transition: color 0.3s;
-    }
-    #noiseIndicator.active { color: #e94560; }
+    #noiseIndicator { font-size:0.78rem; color:#555; letter-spacing:0.04em; height:18px; transition:color 0.3s; }
+    #noiseIndicator.active { color:#e94560; }
 
     /* ── Countdown ── */
-    #countdown {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
+    #countdown { display:none; flex-direction:column; align-items:center; gap:14px; }
+    #countdown p { margin:0; font-size:0.85rem; color:#666; letter-spacing:0.05em; }
+    .ring-wrap { position:relative; width:120px; height:120px; }
+    .ring-wrap svg { width:120px; height:120px; }
+    #countNum { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2.4rem; font-weight:800; color:#fff; }
 
-    #countdown p {
-      margin: 0;
-      font-size: 0.85rem;
-      color: #777;
-      letter-spacing: 0.05em;
-    }
+    /* ── Quiz ── */
+    #quiz { display:none; flex-direction:column; gap:32px; width:100%; max-width:520px; }
 
-    .ring-wrap {
-      position: relative;
-      width: 120px;
-      height: 120px;
-    }
+    .question-label { margin:0 0 12px; font-size:1rem; font-weight:600; color:#ddd; }
+    .question-sublabel { color:#777; font-weight:400; }
 
-    .ring-wrap svg {
-      width: 120px;
-      height: 120px;
-    }
-
-    #countNum {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.4rem;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    /* ── Quiz panel ── */
-    #quiz {
-      display: none;
-      flex-direction: column;
-      gap: 36px;
-      width: 100%;
-      max-width: 520px;
-    }
-
-    .question-label {
-      margin: 0 0 14px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #ddd;
-    }
-
-    /* ── Picture cards grid ── */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-    .card-grid.wide { grid-template-columns: repeat(3, 1fr); }
+    .card-grid      { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+    .card-grid.wide { grid-template-columns:repeat(3,1fr); }
 
     .card {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 18px 10px;
-      border-radius: 14px;
-      background: #16213e;
-      border: 2.5px solid transparent;
-      cursor: pointer;
-      user-select: none;
-      transition: border-color 0.15s, background 0.15s, transform 0.12s;
+      position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:8px; padding:18px 10px; border-radius:14px; background:#16213e;
+      border:2.5px solid transparent; cursor:pointer; user-select:none;
+      transition:border-color 0.15s, background 0.15s, transform 0.12s;
     }
-    .card:hover { transform: translateY(-2px); border-color: rgba(233,69,96,0.5); }
-    .card.selected { border-color: #e94560; background: #1f1040; }
+    .card:hover { transform:translateY(-2px); border-color:rgba(233,69,96,0.5); }
+    .card.selected { border-color:#e94560; background:#1f1040; }
+    .card .check { position:absolute; top:8px; right:8px; width:22px; height:22px; border-radius:50%; background:#e94560; display:none; align-items:center; justify-content:center; }
+    .card.selected .check { display:flex; }
+    .check svg { width:13px; height:13px; }
+    .card .emoji { font-size:2.6rem; line-height:1; }
+    .card .card-label { font-size:0.82rem; font-weight:500; color:#bbb; text-align:center; }
+    .card.selected .card-label { color:#fff; }
+    .emoji-row { display:flex; gap:3px; flex-wrap:wrap; justify-content:center; }
+    .emoji-row span { font-size:1.6rem; line-height:1; }
 
-    .card .check {
-      position: absolute;
-      top: 8px; right: 8px;
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: #e94560;
-      display: none;
-      align-items: center;
-      justify-content: center;
+    #submitBtn { width:100%; padding:14px; border-radius:10px; border:none; background:#e94560; color:#fff; font-size:1rem; font-weight:700; cursor:pointer; transition:background 0.15s; }
+    #submitBtn:hover { background:#c73652; }
+
+    /* ── Between ── */
+    #between { display:none; flex-direction:column; align-items:center; gap:16px; width:100%; max-width:520px; }
+
+    /* ── Final ── */
+    #final { display:none; flex-direction:column; align-items:center; gap:16px; width:100%; max-width:520px; }
+
+    /* ── Shared result styles ── */
+    .score-badge { font-size:3rem; font-weight:800; color:#e94560; margin-bottom:-6px; }
+    .score-lbl   { color:#aaa; font-size:0.9rem; }
+
+    .pts-badge {
+      display:flex; align-items:center; gap:8px;
+      background:#16213e; border-radius:10px; padding:10px 20px; font-size:0.85rem;
     }
-    .card.selected .check { display: flex; }
-    .check svg { width: 13px; height: 13px; }
+    .pts-value { font-size:1.3rem; font-weight:800; color:#f5c518; }
+    .pts-meta  { color:#555; font-size:0.75rem; }
 
-    .card .emoji { font-size: 2.6rem; line-height: 1; }
-    .card .card-label { font-size: 0.82rem; font-weight: 500; color: #bbb; text-align: center; }
-    .card.selected .card-label { color: #fff; }
+    .result-card { width:100%; padding:14px 16px; border-radius:12px; background:#16213e; border-left:4px solid; font-size:0.88rem; line-height:1.6; }
+    .result-card.correct { border-color:#2ecc71; }
+    .result-card.wrong   { border-color:#e94560; }
+    .result-card .verdict { font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+    .result-card.correct .verdict { color:#2ecc71; }
+    .result-card.wrong   .verdict { color:#e94560; }
 
-    .emoji-row { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; }
-    .emoji-row span { font-size: 1.6rem; line-height: 1; }
-
-    /* ── Submit ── */
-    #submitBtn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      border: none;
-      background: #e94560;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.15s;
+    .summary-card {
+      width:100%; display:flex; align-items:center; justify-content:space-between;
+      padding:12px 16px; border-radius:12px; background:#16213e; font-size:0.88rem;
     }
-    #submitBtn:hover { background: #c73652; }
+    .summary-card .s-title { font-weight:600; color:#ddd; }
+    .summary-card .s-score { color:#e94560; font-weight:700; }
+    .summary-card .s-pts   { color:#f5c518; font-size:0.82rem; }
 
-    /* ── Results ── */
-    #results {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      width: 100%;
-      max-width: 520px;
+    .section-heading { width:100%; font-size:0.72rem; font-weight:600; color:#555; letter-spacing:0.07em; text-transform:uppercase; }
+
+    .btn-primary {
+      padding:13px 32px; border-radius:10px; border:none; background:#e94560;
+      color:#fff; font-size:1rem; font-weight:700; cursor:pointer;
+      transition:background 0.15s, transform 0.1s;
     }
+    .btn-primary:hover { background:#c73652; transform:scale(1.03); }
 
-    #scoreBadge { font-size: 3rem; font-weight: 800; color: #e94560; margin-bottom: -4px; }
-    #scoreLabel { color: #aaa; font-size: 0.9rem; }
-
-    #pointsBadge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #16213e;
-      border-radius: 10px;
-      padding: 10px 20px;
-      font-size: 0.85rem;
+    .btn-outline {
+      padding:13px 32px; border-radius:10px; border:2px solid #e94560;
+      background:transparent; color:#e94560; font-size:1rem; font-weight:700; cursor:pointer;
+      transition:background 0.15s, color 0.15s;
     }
-    #pointsValue { font-size: 1.3rem; font-weight: 800; color: #f5c518; }
-    #pointsMeta  { color: #666; font-size: 0.75rem; }
-
-    .result-card {
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 12px;
-      background: #16213e;
-      border-left: 4px solid;
-      font-size: 0.88rem;
-      line-height: 1.6;
-    }
-    .result-card.correct { border-color: #2ecc71; }
-    .result-card.wrong   { border-color: #e94560; }
-    .result-card .verdict { font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    .result-card.correct .verdict { color: #2ecc71; }
-    .result-card.wrong   .verdict { color: #e94560; }
-
-    #retryBtn {
-      padding: 13px 32px;
-      border-radius: 10px;
-      border: 2px solid #e94560;
-      background: transparent;
-      color: #e94560;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-    }
-    #retryBtn:hover { background: #e94560; color: #fff; }
+    .btn-outline:hover { background:#e94560; color:#fff; }
   </style>
 </head>
 <body>
-  <audio id="audio" src="assets/speech/shopping-1.mp3"></audio>
+  <audio id="audio"></audio>
 
   <h1>Auditory Memory Training</h1>
 
-  <!-- ── Settings ── -->
-  <div class="settings">
-    <div class="setting-row">
-      <span class="setting-label">Noise</span>
-      <div class="picker">
-        <button class="pick-btn active" data-level="easy" onclick="setNoise(this)">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#666"/>
-            <line x1="23" y1="9" x2="17" y2="15" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-            <line x1="17" y1="9" x2="23" y2="15" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          None
-        </button>
-        <button class="pick-btn" data-level="medium" onclick="setNoise(this)">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#666"/>
-            <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          Medium
-        </button>
-        <button class="pick-btn" data-level="hard" onclick="setNoise(this)">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#666"/>
-            <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-            <path d="M19 6a9 9 0 0 1 0 12" stroke="#666" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          Loud
-        </button>
+  <div id="progress"></div>
+
+  <!-- ── Listen phase ── -->
+  <div id="listenPhase" style="display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;max-width:520px;">
+    <div class="settings">
+      <div class="setting-row">
+        <span class="setting-label">Noise</span>
+        <div class="picker">
+          <button class="pick-btn active" data-level="easy" onclick="setNoise(this)">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#555"/>
+              <line x1="23" y1="9" x2="17" y2="15" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+              <line x1="17" y1="9" x2="23" y2="15" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            None
+          </button>
+          <button class="pick-btn" data-level="medium" onclick="setNoise(this)">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#555"/>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Medium
+          </button>
+          <button class="pick-btn" data-level="hard" onclick="setNoise(this)">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M11 5L6 9H2v6h4l5 4V5z" fill="#555"/>
+              <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+              <path d="M19 6a9 9 0 0 1 0 12" stroke="#555" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Loud
+          </button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Delay</span>
+        <div class="picker">
+          <button class="pick-btn active" data-delay="5" onclick="setDelay(this)">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="#555" stroke-width="2"/>
+              <polyline points="12,6 12,12 16,12" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="delay-time">5s</span>
+          </button>
+          <button class="pick-btn" data-delay="10" onclick="setDelay(this)">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="#555" stroke-width="2"/>
+              <polyline points="12,6 12,12 16,12" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="delay-time">10s</span>
+          </button>
+          <button class="pick-btn" data-delay="15" onclick="setDelay(this)">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="#555" stroke-width="2"/>
+              <polyline points="12,6 12,12 16,12" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="delay-time">15s</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="setting-row">
-      <span class="setting-label">Delay</span>
-      <div class="picker">
-        <button class="pick-btn active" data-delay="5" onclick="setDelay(this)">
-          <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#666" stroke-width="2"/>
-            <polyline points="12,6 12,12 16,12" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="delay-time">5s</span>
-        </button>
-        <button class="pick-btn" data-delay="10" onclick="setDelay(this)">
-          <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#666" stroke-width="2"/>
-            <polyline points="12,6 12,12 16,12" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="delay-time">10s</span>
-        </button>
-        <button class="pick-btn" data-delay="15" onclick="setDelay(this)">
-          <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#666" stroke-width="2"/>
-            <polyline points="12,6 12,12 16,12" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="delay-time">15s</span>
-        </button>
+    <button id="playBtn" onclick="togglePlay()">
+      <div class="icon-play"></div>
+      <div class="icon-pause"><span></span><span></span></div>
+    </button>
+
+    <div id="noiseIndicator"></div>
+
+    <div id="countdown">
+      <p>Prepare your answer&hellip;</p>
+      <div class="ring-wrap">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#16213e" stroke-width="8"/>
+          <circle id="ring" cx="50" cy="50" r="42" fill="none" stroke="#e94560" stroke-width="8"
+            stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round"
+            transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 0.95s linear"/>
+        </svg>
+        <div id="countNum"></div>
       </div>
     </div>
   </div>
 
-  <!-- ── Play ── -->
-  <button id="playBtn" onclick="togglePlay()">
-    <div class="icon-play"></div>
-    <div class="icon-pause"><span></span><span></span></div>
-  </button>
+  <!-- ── Quiz ── -->
+  <div id="quiz"></div>
 
-  <div id="noiseIndicator"></div>
+  <!-- ── Between quizzes ── -->
+  <div id="between"></div>
 
-  <!-- ── Countdown ── -->
-  <div id="countdown">
-    <p>Prepare your answer&hellip;</p>
-    <div class="ring-wrap">
-      <svg viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="42" fill="none" stroke="#16213e" stroke-width="8"/>
-        <circle id="ring" cx="50" cy="50" r="42" fill="none" stroke="#e94560" stroke-width="8"
-          stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round"
-          transform="rotate(-90 50 50)"
-          style="transition: stroke-dashoffset 0.95s linear"/>
-      </svg>
-      <div id="countNum"></div>
-    </div>
-  </div>
-
-  <!-- ══════════════ QUIZ ══════════════ -->
-  <div id="quiz">
-
-    <div>
-      <p class="question-label">1. Where did the shopping take place?</p>
-      <div class="card-grid">
-        <div class="card" data-q="q1" data-v="market" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🧺</div><div class="card-label">The market</div>
-        </div>
-        <div class="card" data-q="q1" data-v="shops" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🏪</div><div class="card-label">The shops</div>
-        </div>
-        <div class="card" data-q="q1" data-v="supermarket" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🛒</div><div class="card-label">The supermarket</div>
-        </div>
-        <div class="card" data-q="q1" data-v="bakery" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🥖</div><div class="card-label">The bakery</div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <p class="question-label">2. How many items were mentioned?</p>
-      <div class="card-grid">
-        <div class="card" data-q="q2" data-v="2" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji-row"><span>🛍️</span><span>🛍️</span></div><div class="card-label">Two</div>
-        </div>
-        <div class="card" data-q="q2" data-v="3" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji-row"><span>🛍️</span><span>🛍️</span><span>🛍️</span></div><div class="card-label">Three</div>
-        </div>
-        <div class="card" data-q="q2" data-v="4" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji-row"><span>🛍️</span><span>🛍️</span><span>🛍️</span><span>🛍️</span></div><div class="card-label">Four</div>
-        </div>
-        <div class="card" data-q="q2" data-v="5" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji-row"><span>🛍️</span><span>🛍️</span><span>🛍️</span><span>🛍️</span><span>🛍️</span></div><div class="card-label">Five</div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <p class="question-label">3. How many apples were bought?</p>
-      <div class="card-grid">
-        <div class="card" data-q="q3" data-v="2" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji-row"><span>🍎</span><span>🍎</span></div><div class="card-label">Two</div>
-        </div>
-        <div class="card" data-q="q3" data-v="3" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji-row"><span>🍎</span><span>🍎</span><span>🍎</span></div><div class="card-label">Three</div>
-        </div>
-        <div class="card" data-q="q3" data-v="4" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji-row"><span>🍎</span><span>🍎</span><span>🍎</span><span>🍎</span></div><div class="card-label">Four</div>
-        </div>
-        <div class="card" data-q="q3" data-v="bag" onclick="pick(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🛍️</div><div class="card-label">A bag</div>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <p class="question-label">4. Which items were bought? <span style="color:#aaa;font-weight:400">(select all)</span></p>
-      <div class="card-grid wide">
-        <div class="card" data-q="q4" data-v="milk" onclick="toggle(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🥛</div><div class="card-label">Carton of milk</div>
-        </div>
-        <div class="card" data-q="q4" data-v="eggs" onclick="toggle(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🥚</div><div class="card-label">Eggs</div>
-        </div>
-        <div class="card" data-q="q4" data-v="bread" onclick="toggle(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🍞</div><div class="card-label">Loaf of bread</div>
-        </div>
-        <div class="card" data-q="q4" data-v="butter" onclick="toggle(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🧈</div><div class="card-label">Butter</div>
-        </div>
-        <div class="card" data-q="q4" data-v="apples" onclick="toggle(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🍎</div><div class="card-label">Apples</div>
-        </div>
-        <div class="card" data-q="q4" data-v="cheese" onclick="toggle(this)">
-          <div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="emoji">🧀</div><div class="card-label">Cheese</div>
-        </div>
-      </div>
-    </div>
-
-    <button id="submitBtn" onclick="submitQuiz()">Submit answers</button>
-  </div>
-
-  <!-- ══════════════ RESULTS ══════════════ -->
-  <div id="results">
-    <div id="scoreBadge"></div>
-    <div id="scoreLabel"></div>
-    <div id="pointsBadge">
-      <span>🏆</span>
-      <span id="pointsValue"></span>
-      <span id="pointsMeta"></span>
-    </div>
-    <div id="resultItems" style="width:100%;display:flex;flex-direction:column;gap:10px;"></div>
-    <button id="retryBtn" onclick="retry()">&#9654; Listen again &amp; retry</button>
-  </div>
+  <!-- ── Final results ── -->
+  <div id="final"></div>
 
   <script>
+    // ═══════════════════════════════════════════════════════
+    // SCENARIO DATA
+    // ═══════════════════════════════════════════════════════
+    const scenarios = [
+      {
+        audio: 'assets/speech/shopping-1.mp3',
+        title: 'The Shopping Trip',
+        questions: [
+          {
+            label: 'Where did the shopping take place?',
+            type: 'single',
+            options: [
+              { emoji:'🧺', label:'The market',      value:'market' },
+              { emoji:'🏪', label:'The shops',        value:'shops' },
+              { emoji:'🛒', label:'The supermarket',  value:'supermarket' },
+              { emoji:'🥖', label:'The bakery',       value:'bakery' },
+            ],
+            correct: 'shops',
+            explanation: '"Today at the shops…" — the shops.',
+          },
+          {
+            label: 'How many items were mentioned?',
+            type: 'single',
+            options: [
+              { emojiRow:['🛍️','🛍️'],                 label:'Two',   value:'2' },
+              { emojiRow:['🛍️','🛍️','🛍️'],            label:'Three', value:'3' },
+              { emojiRow:['🛍️','🛍️','🛍️','🛍️'],       label:'Four',  value:'4' },
+              { emojiRow:['🛍️','🛍️','🛍️','🛍️','🛍️'], label:'Five',  value:'5' },
+            ],
+            correct: '3',
+            explanation: 'Three items: milk, apples, and bread.',
+          },
+          {
+            label: 'How many apples were bought?',
+            type: 'single',
+            options: [
+              { emojiRow:['🍎','🍎'],           label:'Two',   value:'2' },
+              { emojiRow:['🍎','🍎','🍎'],      label:'Three', value:'3' },
+              { emojiRow:['🍎','🍎','🍎','🍎'], label:'Four',  value:'4' },
+              { emoji:'🛍️',                    label:'A bag', value:'bag' },
+            ],
+            correct: '3',
+            explanation: 'Three apples were bought.',
+          },
+          {
+            label: 'Which items were bought?', sublabel: '(select all)',
+            type: 'multi', wide: true,
+            options: [
+              { emoji:'🥛', label:'Carton of milk', value:'milk' },
+              { emoji:'🥚', label:'Eggs',           value:'eggs' },
+              { emoji:'🍞', label:'Loaf of bread',  value:'bread' },
+              { emoji:'🧈', label:'Butter',         value:'butter' },
+              { emoji:'🍎', label:'Apples',         value:'apples' },
+              { emoji:'🧀', label:'Cheese',         value:'cheese' },
+            ],
+            correct: ['milk','bread','apples'],
+            explanation: 'A carton of milk, three apples, and a loaf of bread.',
+          },
+        ],
+      },
+      {
+        audio: 'assets/speech/shopping-2.mp3',
+        title: 'The Farmers Market',
+        questions: [
+          {
+            label: 'Where did the shopping take place?',
+            type: 'single',
+            options: [
+              { emoji:'🏪', label:'The shops',          value:'shops' },
+              { emoji:'🛒', label:'The supermarket',    value:'supermarket' },
+              { emoji:'🧺', label:'The farmers market', value:'market' },
+              { emoji:'💊', label:'The pharmacy',       value:'pharmacy' },
+            ],
+            correct: 'market',
+            explanation: '"I went to the farmers market" — the farmers market.',
+          },
+          {
+            label: 'How many items were mentioned?',
+            type: 'single',
+            options: [
+              { emojiRow:['🛍️','🛍️'],                 label:'Two',   value:'2' },
+              { emojiRow:['🛍️','🛍️','🛍️'],            label:'Three', value:'3' },
+              { emojiRow:['🛍️','🛍️','🛍️','🛍️'],       label:'Four',  value:'4' },
+              { emojiRow:['🛍️','🛍️','🛍️','🛍️','🛍️'], label:'Five',  value:'5' },
+            ],
+            correct: '3',
+            explanation: 'Three items: bananas, tomatoes, and honey.',
+          },
+          {
+            label: 'How many tomatoes were bought?',
+            type: 'single',
+            options: [
+              { emojiRow:['🍅'],              label:'One',   value:'1' },
+              { emojiRow:['🍅','🍅'],         label:'Two',   value:'2' },
+              { emojiRow:['🍅','🍅','🍅'],    label:'Three', value:'3' },
+              { emojiRow:['🍅','🍅','🍅','🍅'], label:'Four', value:'4' },
+            ],
+            correct: '2',
+            explanation: 'Two tomatoes were bought.',
+          },
+          {
+            label: 'Which items were bought?', sublabel: '(select all)',
+            type: 'multi', wide: true,
+            options: [
+              { emoji:'🍌', label:'Bananas',      value:'bananas' },
+              { emoji:'🍅', label:'Tomatoes',     value:'tomatoes' },
+              { emoji:'🍯', label:'Honey',        value:'honey' },
+              { emoji:'🥕', label:'Carrots',      value:'carrots' },
+              { emoji:'🍓', label:'Strawberries', value:'strawberries' },
+              { emoji:'🧅', label:'Onions',       value:'onions' },
+            ],
+            correct: ['bananas','tomatoes','honey'],
+            explanation: 'A bunch of bananas, two tomatoes, and a jar of honey.',
+          },
+        ],
+      },
+      {
+        audio: 'assets/speech/shopping-3.mp3',
+        title: 'Breakfast',
+        questions: [
+          {
+            label: 'What meal was it?',
+            type: 'single',
+            options: [
+              { emoji:'🌅', label:'Breakfast', value:'breakfast' },
+              { emoji:'☀️', label:'Lunch',     value:'lunch' },
+              { emoji:'🌙', label:'Dinner',    value:'dinner' },
+              { emoji:'🫖', label:'Tea',       value:'tea' },
+            ],
+            correct: 'breakfast',
+            explanation: '"For breakfast this morning…" — breakfast.',
+          },
+          {
+            label: 'How many items were mentioned?',
+            type: 'single',
+            options: [
+              { emojiRow:['🛍️','🛍️'],                 label:'Two',   value:'2' },
+              { emojiRow:['🛍️','🛍️','🛍️'],            label:'Three', value:'3' },
+              { emojiRow:['🛍️','🛍️','🛍️','🛍️'],       label:'Four',  value:'4' },
+              { emojiRow:['🛍️','🛍️','🛍️','🛍️','🛍️'], label:'Five',  value:'5' },
+            ],
+            correct: '3',
+            explanation: 'Three items: boiled eggs, toast, and orange juice.',
+          },
+          {
+            label: 'How many eggs were there?',
+            type: 'single',
+            options: [
+              { emojiRow:['🥚'],              label:'One',   value:'1' },
+              { emojiRow:['🥚','🥚'],         label:'Two',   value:'2' },
+              { emojiRow:['🥚','🥚','🥚'],    label:'Three', value:'3' },
+              { emojiRow:['🥚','🥚','🥚','🥚'], label:'Four', value:'4' },
+            ],
+            correct: '2',
+            explanation: 'Two boiled eggs.',
+          },
+          {
+            label: 'Which items were mentioned?', sublabel: '(select all)',
+            type: 'multi', wide: true,
+            options: [
+              { emoji:'🥚', label:'Boiled eggs',  value:'eggs' },
+              { emoji:'🥛', label:'Milk',         value:'milk' },
+              { emoji:'🍞', label:'Toast',        value:'toast' },
+              { emoji:'🥤', label:'Orange juice', value:'oj' },
+              { emoji:'🥞', label:'Pancakes',     value:'pancakes' },
+              { emoji:'☕', label:'Coffee',       value:'coffee' },
+            ],
+            correct: ['eggs','toast','oj'],
+            explanation: 'Two boiled eggs, a slice of toast, and a glass of orange juice.',
+          },
+        ],
+      },
+      {
+        audio: 'assets/speech/shopping-4.mp3',
+        title: 'The Favour',
+        questions: [
+          {
+            label: 'Who made the request?',
+            type: 'single',
+            options: [
+              { emoji:'🏠',   label:'Neighbour', value:'neighbour' },
+              { emoji:'👨‍👩‍👧', label:'Family',   value:'family' },
+              { emoji:'🧑‍💼', label:'Boss',      value:'boss' },
+              { emoji:'👴',   label:'Friend',    value:'friend' },
+            ],
+            correct: 'neighbour',
+            explanation: '"My neighbour asked me…" — neighbour.',
+          },
+          {
+            label: 'How many letters were there?',
+            type: 'single',
+            options: [
+              { emojiRow:['✉️','✉️'],                label:'Two',   value:'2' },
+              { emojiRow:['✉️','✉️','✉️'],           label:'Three', value:'3' },
+              { emojiRow:['✉️','✉️','✉️','✉️'],      label:'Four',  value:'4' },
+              { emojiRow:['✉️','✉️','✉️','✉️','✉️'], label:'Five',  value:'5' },
+            ],
+            correct: '4',
+            explanation: 'Four letters.',
+          },
+          {
+            label: 'Where were the items?',
+            type: 'single',
+            options: [
+              { emoji:'🚗', label:'The car',        value:'car' },
+              { emoji:'🚪', label:'The front door', value:'door' },
+              { emoji:'📬', label:'The letterbox',  value:'letterbox' },
+              { emoji:'🏪', label:'The shop',       value:'shop' },
+            ],
+            correct: 'door',
+            explanation: '"…from the front door" — the front door.',
+          },
+          {
+            label: 'Which items were collected?', sublabel: '(select all)',
+            type: 'multi', wide: true,
+            options: [
+              { emoji:'✉️', label:'Letters',   value:'letters' },
+              { emoji:'📦', label:'Parcel',    value:'parcel' },
+              { emoji:'🥛', label:'Milk',      value:'milk' },
+              { emoji:'📰', label:'Newspaper', value:'newspaper' },
+              { emoji:'🗝️', label:'Keys',      value:'keys' },
+              { emoji:'📱', label:'Phone',     value:'phone' },
+            ],
+            correct: ['letters','parcel','milk'],
+            explanation: 'Four letters, a parcel, and a pint of milk.',
+          },
+        ],
+      },
+    ];
+
+    // ═══════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════
     const audio       = document.getElementById('audio');
     const playBtn     = document.getElementById('playBtn');
-    const quizEl      = document.getElementById('quiz');
-    const resultsEl   = document.getElementById('results');
     const noiseInd    = document.getElementById('noiseIndicator');
     const countdownEl = document.getElementById('countdown');
     const countNumEl  = document.getElementById('countNum');
     const ringEl      = document.getElementById('ring');
+    const listenPhase = document.getElementById('listenPhase');
+    const quizEl      = document.getElementById('quiz');
+    const betweenEl   = document.getElementById('between');
+    const finalEl     = document.getElementById('final');
+    const progressEl  = document.getElementById('progress');
 
-    let hasPlayed  = false;
-    let noise      = 'easy';
-    let delay      = 5;
+    let currentIdx  = 0;
+    let hasPlayed   = false;
+    let noise       = 'easy';
+    let delay       = 5;
+    let quizResults = []; // { numCorrect, pts, items }
 
     // ── Settings ─────────────────────────────────────────────
-    const noiseLevels  = { easy: 0,    medium: 0.18, hard: 0.5  };
-    const noiseLabels  = { easy: '',   medium: '◈ Background noise: medium', hard: '◈ Background noise: high' };
-    const noiseMults   = { easy: 1.0,  medium: 1.5,  hard: 2.0  };
-    const delayMults   = { 5:   1.0,   10:     1.25,  15:  1.5  };
+    const noiseLevels = { easy:0,   medium:0.18, hard:0.5 };
+    const noiseLabels = { easy:'',  medium:'◈ Background noise: medium', hard:'◈ Background noise: high' };
+    const noiseMults  = { easy:1.0, medium:1.5,  hard:2.0 };
+    const delayMults  = { 5:1.0,    10:1.25,     15:1.5 };
 
     function setNoise(btn) {
       btn.closest('.picker').querySelectorAll('.pick-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       noise = btn.dataset.level;
     }
-
     function setDelay(btn) {
       btn.closest('.picker').querySelectorAll('.pick-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       delay = parseInt(btn.dataset.delay);
     }
 
-    // ── Web Audio API ─────────────────────────────────────────
+    // ── Web Audio ─────────────────────────────────────────────
     let audioCtx  = null;
     let noiseGain = null;
 
     function initAudio() {
       if (audioCtx) return;
       audioCtx = new AudioContext();
-
       const sampleRate = audioCtx.sampleRate;
-      const bufLen     = sampleRate * 4;
-      const buffer     = audioCtx.createBuffer(1, bufLen, sampleRate);
-      const data       = buffer.getChannelData(0);
+      const bufLen = sampleRate * 4;
+      const buffer = audioCtx.createBuffer(1, bufLen, sampleRate);
+      const data   = buffer.getChannelData(0);
       let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
       for (let i = 0; i < bufLen; i++) {
         const w = Math.random() * 2 - 1;
-        b0 = 0.99886*b0 + w*0.0555179;
-        b1 = 0.99332*b1 + w*0.0750759;
-        b2 = 0.96900*b2 + w*0.1538520;
-        b3 = 0.86650*b3 + w*0.3104856;
-        b4 = 0.55000*b4 + w*0.5329522;
-        b5 = -0.7616*b5 - w*0.0168980;
+        b0 = 0.99886*b0 + w*0.0555179; b1 = 0.99332*b1 + w*0.0750759;
+        b2 = 0.96900*b2 + w*0.1538520; b3 = 0.86650*b3 + w*0.3104856;
+        b4 = 0.55000*b4 + w*0.5329522; b5 = -0.7616*b5 - w*0.0168980;
         data[i] = (b0+b1+b2+b3+b4+b5+b6 + w*0.5362) / 7;
         b6 = w * 0.115926;
       }
-
       const noiseSource = audioCtx.createBufferSource();
-      noiseSource.buffer = buffer;
-      noiseSource.loop   = true;
-
+      noiseSource.buffer = buffer; noiseSource.loop = true;
       const lpf = audioCtx.createBiquadFilter();
-      lpf.type            = 'lowpass';
-      lpf.frequency.value = 1800;
-      lpf.Q.value         = 0.8;
-
-      noiseGain = audioCtx.createGain();
-      noiseGain.gain.value = 0;
-
-      noiseSource.connect(lpf);
-      lpf.connect(noiseGain);
-      noiseGain.connect(audioCtx.destination);
+      lpf.type = 'lowpass'; lpf.frequency.value = 1800; lpf.Q.value = 0.8;
+      noiseGain = audioCtx.createGain(); noiseGain.gain.value = 0;
+      noiseSource.connect(lpf); lpf.connect(noiseGain); noiseGain.connect(audioCtx.destination);
       noiseSource.start();
     }
 
@@ -593,31 +616,41 @@
       noiseGain.gain.setTargetAtTime(value, audioCtx.currentTime, 0.15);
     }
 
-    // ── Chime ─────────────────────────────────────────────────
-    // Soft ascending three-note arpeggio (E5 → G5 → B5)
+    // ── Chime — loud, fun 4-note major arpeggio (C–E–G–C) ────
     function playChime() {
       return new Promise(resolve => {
+        // Each note: [freq, startSec, durSec]
         const notes = [
-          { freq: 659.3, start: 0.0,  dur: 0.55 },
-          { freq: 784.0, start: 0.22, dur: 0.55 },
-          { freq: 987.8, start: 0.44, dur: 0.75 },
+          [523.3, 0.00, 0.5],   // C5
+          [659.3, 0.18, 0.5],   // E5
+          [784.0, 0.36, 0.5],   // G5
+          [1046.5,0.54, 0.75],  // C6
         ];
-        notes.forEach(({ freq, start, dur }) => {
-          const osc  = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = freq;
+        notes.forEach(([freq, start, dur]) => {
           const t = audioCtx.currentTime + start;
-          gain.gain.setValueAtTime(0, t);
-          gain.gain.linearRampToValueAtTime(0.22, t + 0.012); // soft attack
-          gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(t);
-          osc.stop(t + dur);
+          // Fundamental (sine) — full and warm
+          const osc1  = audioCtx.createOscillator();
+          const gain1 = audioCtx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.value = freq;
+          gain1.gain.setValueAtTime(0, t);
+          gain1.gain.linearRampToValueAtTime(0.45, t + 0.015);
+          gain1.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+          osc1.connect(gain1); gain1.connect(audioCtx.destination);
+          osc1.start(t); osc1.stop(t + dur);
+          // Octave overtone (triangle) — adds sparkle
+          const osc2  = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.type = 'triangle';
+          osc2.frequency.value = freq * 2;
+          gain2.gain.setValueAtTime(0, t);
+          gain2.gain.linearRampToValueAtTime(0.15, t + 0.015);
+          gain2.gain.exponentialRampToValueAtTime(0.0001, t + dur * 0.7);
+          osc2.connect(gain2); gain2.connect(audioCtx.destination);
+          osc2.start(t); osc2.stop(t + dur);
         });
-        // Resolve just as the last note fades
-        setTimeout(resolve, (0.44 + 0.75) * 1000);
+        // Chime ends at 0.54 + 0.75 = 1.29s, then 1s pause before audio
+        setTimeout(resolve, (0.54 + 0.75 + 1.0) * 1000);
       });
     }
 
@@ -645,120 +678,199 @@
     });
 
     // ── Countdown ─────────────────────────────────────────────
-    const CIRCUMFERENCE = 264;
-
+    const CIRC = 264;
     function startCountdown(seconds) {
       countdownEl.style.display = 'flex';
-      countNumEl.textContent = seconds;
+      countNumEl.textContent    = seconds;
       ringEl.style.strokeDashoffset = '0';
-
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        ringEl.style.strokeDashoffset = CIRC;
+      }));
       let remaining = seconds;
-
-      // Kick off the first arc shrink after a brief paint delay
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          ringEl.style.strokeDashoffset = CIRCUMFERENCE;
-        });
-      });
-
-      const interval = setInterval(() => {
+      const iv = setInterval(() => {
         remaining--;
         countNumEl.textContent = remaining;
         if (remaining <= 0) {
-          clearInterval(interval);
+          clearInterval(iv);
           countdownEl.style.display = 'none';
-          quizEl.style.display = 'flex';
+          renderAndShowQuiz();
         }
       }, 1000);
     }
 
-    // ── Card interactions ─────────────────────────────────────
+    // ── Progress dots ──────────────────────────────────────────
+    function renderProgress() {
+      progressEl.innerHTML = scenarios.map((_, i) => {
+        const cls = i < currentIdx ? 'dot done' : i === currentIdx ? 'dot current' : 'dot';
+        return `<div class="${cls}"></div>`;
+      }).join('');
+    }
+
+    // ── Quiz rendering ─────────────────────────────────────────
+    const CHECK = `<div class="check"><svg viewBox="0 0 12 10" fill="none"><polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`;
+
+    function cardHTML(opt, qIdx, type) {
+      const onclick = type === 'multi' ? `toggle(this)` : `pick(this)`;
+      let visual = '';
+      if (opt.emojiRow) {
+        visual = `<div class="emoji-row">${opt.emojiRow.map(e => `<span>${e}</span>`).join('')}</div>`;
+      } else {
+        visual = `<div class="emoji">${opt.emoji}</div>`;
+      }
+      return `<div class="card" data-q="q${qIdx}" data-v="${opt.value}" onclick="${onclick}">
+        ${CHECK}${visual}<div class="card-label">${opt.label}</div>
+      </div>`;
+    }
+
+    function renderAndShowQuiz() {
+      const s = scenarios[currentIdx];
+      let html = '';
+      s.questions.forEach((q, qi) => {
+        const sub = q.sublabel ? ` <span class="question-sublabel">${q.sublabel}</span>` : '';
+        html += `<div>
+          <p class="question-label">${qi + 1}. ${q.label}${sub}</p>
+          <div class="card-grid${q.wide ? ' wide' : ''}">
+            ${q.options.map(opt => cardHTML(opt, qi, q.type)).join('')}
+          </div>
+        </div>`;
+      });
+      html += `<button id="submitBtn" onclick="submitQuiz()">Submit answers</button>`;
+      quizEl.innerHTML = html;
+      quizEl.style.display = 'flex';
+    }
+
+    // ── Card interactions ──────────────────────────────────────
     function pick(card) {
       const q = card.dataset.q;
       document.querySelectorAll(`.card[data-q="${q}"]`).forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
     }
-
     function toggle(card) { card.classList.toggle('selected'); }
 
-    // ── Quiz logic ────────────────────────────────────────────
-    const correct = {
-      q1: 'shops',
-      q2: '3',
-      q3: '3',
-      q4: ['milk', 'bread', 'apples'],
-    };
-
-    const explanations = {
-      q1: '"Today at the shops…" — the shops.',
-      q2: 'Three items: milk, apples, and bread.',
-      q3: 'Three apples were bought.',
-      q4: 'A carton of milk, three apples, and a loaf of bread.',
-    };
-
+    // ── Submit quiz ────────────────────────────────────────────
     function submitQuiz() {
+      const s = scenarios[currentIdx];
       let numCorrect = 0;
       const items = [];
 
-      ['q1','q2','q3'].forEach(q => {
-        const sel = document.querySelector(`.card[data-q="${q}"].selected`);
-        const ok  = sel && sel.dataset.v === correct[q];
+      s.questions.forEach((q, qi) => {
+        let ok;
+        if (q.type === 'multi') {
+          const chosen = [...document.querySelectorAll(`.card[data-q="q${qi}"].selected`)]
+            .map(c => c.dataset.v).sort();
+          ok = JSON.stringify(chosen) === JSON.stringify([...q.correct].sort());
+        } else {
+          const sel = document.querySelector(`.card[data-q="q${qi}"].selected`);
+          ok = sel && sel.dataset.v === q.correct;
+        }
         if (ok) numCorrect++;
-        items.push({ ok, label: `Question ${q[1]}`, explanation: explanations[q] });
+        items.push({ ok, label: `Question ${qi + 1}`, explanation: q.explanation });
       });
 
-      const chosen = [...document.querySelectorAll('.card[data-q="q4"].selected')].map(c => c.dataset.v).sort();
-      const ok4    = JSON.stringify(chosen) === JSON.stringify([...correct.q4].sort());
-      if (ok4) numCorrect++;
-      items.push({ ok: ok4, label: 'Question 4', explanation: explanations.q4 });
-
-      // Weighted score
-      const nm = noiseMults[noise];
-      const dm = delayMults[delay];
+      const nm  = noiseMults[noise];
+      const dm  = delayMults[delay];
       const pts = Math.round(numCorrect * 100 * nm * dm);
-      const maxPts = Math.round(4 * 100 * nm * dm);
-
-      document.getElementById('scoreBadge').textContent = `${numCorrect} / 4`;
-      document.getElementById('scoreLabel').textContent =
-        numCorrect === 4 ? 'Perfect memory!' :
-        numCorrect === 3 ? 'Great job!'       :
-        numCorrect === 2 ? 'Getting there!'   : 'Keep practising!';
-
-      document.getElementById('pointsValue').textContent = `${pts} pts`;
-      document.getElementById('pointsMeta').textContent =
-        `of ${maxPts}  ·  ×${nm} noise  ·  ×${dm} delay`;
-
-      const container = document.getElementById('resultItems');
-      container.innerHTML = '';
-      items.forEach(item => {
-        const d = document.createElement('div');
-        d.className = 'result-card ' + (item.ok ? 'correct' : 'wrong');
-        d.innerHTML = `<div class="verdict">${item.ok ? '✓' : '✗'} ${item.label}</div>
-          <div style="color:#bbb">${item.explanation}</div>`;
-        container.appendChild(d);
-      });
+      quizResults.push({ numCorrect, pts, items, title: s.title });
 
       quizEl.style.display = 'none';
-      resultsEl.style.display = 'flex';
+      showBetween(numCorrect, pts, nm, dm, items);
     }
 
-    async function retry() {
-      document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
-      resultsEl.style.display  = 'none';
-      quizEl.style.display     = 'none';
-      countdownEl.style.display = 'none';
-      hasPlayed    = false;
-      playBtn.disabled = false;
-      audio.currentTime = 0;
-      initAudio();
-      if (audioCtx.state === 'suspended') await audioCtx.resume();
-      playBtn.classList.add('playing');
-      await playChime();
-      audio.play();
-      setNoiseGain(noiseLevels[noise]);
-      noiseInd.textContent = noiseLabels[noise];
-      noiseInd.classList.toggle('active', noise !== 'easy');
+    // ── Between screen ─────────────────────────────────────────
+    function showBetween(numCorrect, pts, nm, dm, items) {
+      const isLast   = currentIdx === scenarios.length - 1;
+      const maxPts   = Math.round(4 * 100 * nm * dm);
+      const btnLabel = isLast ? 'See final results' : `Continue to Quiz ${currentIdx + 2} →`;
+
+      let resultCards = items.map((item, i) => `
+        <div class="result-card ${item.ok ? 'correct' : 'wrong'}">
+          <div class="verdict">${item.ok ? '✓' : '✗'} ${item.label}</div>
+          <div style="color:#bbb">${item.explanation}</div>
+        </div>`).join('');
+
+      betweenEl.innerHTML = `
+        <div class="score-badge">${numCorrect} / 4</div>
+        <div class="score-lbl">Quiz ${currentIdx + 1} of ${scenarios.length} — ${scenarios[currentIdx].title}</div>
+        <div class="pts-badge">
+          <span>🏆</span>
+          <span class="pts-value">${pts} pts</span>
+          <span class="pts-meta">of ${maxPts} · ×${nm} noise · ×${dm} delay</span>
+        </div>
+        ${resultCards}
+        <button class="btn-primary" onclick="${isLast ? 'showFinal()' : 'nextQuiz()'}">${btnLabel}</button>
+      `;
+      betweenEl.style.display = 'flex';
     }
+
+    // ── Next quiz ──────────────────────────────────────────────
+    function nextQuiz() {
+      betweenEl.style.display = 'none';
+      currentIdx++;
+      startScenario(currentIdx);
+    }
+
+    // ── Final screen ───────────────────────────────────────────
+    function showFinal() {
+      betweenEl.style.display = 'none';
+      listenPhase.style.display = 'none';
+      progressEl.style.display = 'none';
+
+      const totalCorrect = quizResults.reduce((s, r) => s + r.numCorrect, 0);
+      const totalPts     = quizResults.reduce((s, r) => s + r.pts, 0);
+      const maxCorrect   = scenarios.length * 4;
+
+      const summaryCards = quizResults.map((r, i) => `
+        <div class="summary-card">
+          <div>
+            <div class="s-title">Quiz ${i + 1}: ${r.title}</div>
+            <div class="s-pts">${r.pts} pts</div>
+          </div>
+          <div class="s-score">${r.numCorrect} / 4</div>
+        </div>`).join('');
+
+      const mood =
+        totalCorrect === maxCorrect ? 'Perfect memory! 🎉' :
+        totalCorrect >= maxCorrect * 0.75 ? 'Excellent work!' :
+        totalCorrect >= maxCorrect * 0.5  ? 'Good effort!'    : 'Keep practising!';
+
+      finalEl.innerHTML = `
+        <div class="score-badge">${totalCorrect} / ${maxCorrect}</div>
+        <div class="score-lbl">${mood}</div>
+        <div class="pts-badge">
+          <span>🏆</span>
+          <span class="pts-value">${totalPts} pts total</span>
+        </div>
+        <div class="section-heading" style="margin-top:8px">Per quiz</div>
+        ${summaryCards}
+        <button class="btn-outline" onclick="restartAll()">↩ Try again</button>
+      `;
+      finalEl.style.display = 'flex';
+    }
+
+    // ── Start scenario ─────────────────────────────────────────
+    function startScenario(idx) {
+      audio.src = scenarios[idx].audio;
+      hasPlayed = false;
+      playBtn.disabled = false;
+      playBtn.classList.remove('playing');
+      countdownEl.style.display = 'none';
+      quizEl.style.display = 'none';
+      listenPhase.style.display = 'flex';
+      renderProgress();
+    }
+
+    // ── Restart all ────────────────────────────────────────────
+    function restartAll() {
+      currentIdx  = 0;
+      quizResults = [];
+      finalEl.style.display   = 'none';
+      betweenEl.style.display = 'none';
+      progressEl.style.display = 'flex';
+      startScenario(0);
+    }
+
+    // ── Init ───────────────────────────────────────────────────
+    startScenario(0);
   </script>
 </body>
 </html>
